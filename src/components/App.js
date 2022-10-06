@@ -8,6 +8,12 @@ import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import ImagePopup from './ImagePopup';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
+import Login from './Login';
+import Register from './Register';
+import ProtectedRoute from './ProtectedRoute';
+import * as auth from '../utils/auth';
+
 
 
 
@@ -19,7 +25,13 @@ function App() {
     const [selectedCard, setSelectedCard] = useState({});
     const [currentUser, setCurrentUser] = useState({});
     const [cards, setCards] = useState([]);
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [userData, setUserData] = useState({
+        email: '',
+        password: ''
+    });
     
+    const history = useHistory();
 
     useEffect(() => {
         api.getInitialCards().then((resCard) => {
@@ -88,19 +100,72 @@ function App() {
         setSelectedCard(card);
         setImagePopupOpen(true);
     }
+
+    useEffect(() => {
+        tokenCheck();
+    }, [])
+
+    function handleLogin(email, password) {
+        return auth.authorize(email, password)
+        .then((data) =>{
+            if(!data.jwt) throw new Error('Missing jwt');
+
+            localStorage.setItem('jwt', data.jwt);
+            setLoggedIn(true);
+            history.push('/');   
+        });
+        
+    }
+    function handleRegister(password, email) {
+        return auth.register(password, email).then((res) =>{
+            history.push('/sign-in');
+               
+        })
+    }
+    function tokenCheck() {
+        const jwt = localStorage.getItem('jwt');
+        if (!jwt) return;
+        
+        auth.getContent(jwt).then((data) =>{
+            setLoggedIn(true);
+            setUserData({
+                email: data.email,
+                password: data.password
+            })
+            history.push('/');
+        });
+    }
      
   return (
     <CurrentUserContext.Provider value={currentUser}>
         <Header/>
-        <Main
-        cards={cards}
-        onCardLike={handleCardLike}
-        onCardDelete={handleCardDelete}
-        onEditAvatar={() => setEditAvatarPopupOpen(true)}
-        onEditProfile={() => setEditProfilePopupOpen(true)}
-        onAddPlace={() => setAddPlacePopupOpen(true)}
-        onCardClick={handleCardClick}
-        />
+        
+        <Switch>
+            <ProtectedRoute
+                exact
+                path="/"
+                loggedIn={loggedIn}
+                userData={userData}
+                component={Main}
+                cards={cards}
+                onCardLike={handleCardLike}
+                onCardDelete={handleCardDelete}
+                onEditAvatar={() => setEditAvatarPopupOpen(true)}
+                onEditProfile={() => setEditProfilePopupOpen(true)}
+                onAddPlace={() => setAddPlacePopupOpen(true)}
+                onCardClick={handleCardClick}
+            />
+            <Route path="/sign-up">
+                <Register onRegister={handleRegister}/>
+            </Route>
+            <Route path="/sign-in">
+                <Login onLogin={handleLogin} />
+            </Route>
+            <Route exact path="/">
+                {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
+            </Route>
+        </Switch>
+ 
         <Footer/>
         <EditProfilePopup onUpdateUser={handleUpdateUser} isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} />
         <AddPlacePopup onAddPlace={handleAddPlaceSubmit} isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} />
