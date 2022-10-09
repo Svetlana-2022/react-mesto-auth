@@ -1,4 +1,3 @@
-import { render } from "@testing-library/react";
 import React, { useState } from "react";
 
 
@@ -21,13 +20,12 @@ const Login = ({ onLogin }) => {
         if(!password || !email) return;
 
         onLogin(password, email)
-            .cath(err => {
-                console.log(err);
+            
                 // setState({
                 //     ...state,
                 //     message: 'Что-то пошло не так'
                 // })
-            });
+           
         
         // auth.authorize(state.email, state.password)
         // .then((data) =>{

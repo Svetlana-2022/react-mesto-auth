@@ -1,4 +1,3 @@
-import { render } from "@testing-library/react";
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 
@@ -10,12 +9,10 @@ const Register = ({ onRegister }) => {
         email: '',
         // message: ''
     })
-    console.log('ttt')
 
     // const history = useHistory();
    
     const handleChange = (e) => {
-        console.log('rrr');
         const {name, value} = e.target;
         setState({
             ...state,

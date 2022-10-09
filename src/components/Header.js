@@ -2,16 +2,21 @@ import React from "react";
 import logo from '../images/Vector(1).svg';
 import { Link } from 'react-router-dom';
 import { Switch, Route } from 'react-router-dom';
+import { UserDataContext } from '../contexts/UserDataContext';
 
-function Header() {
+function Header(props) {
+    console.log(props);
+    const userData = React.useContext(UserDataContext);
+    console.log(userData);//undefined
+    
     return (
         <Switch>
             <Route exact path="/"> 
                 <div className="header">
                     <img className="header__logo" src={logo} alt="логотип"/>
-                    <div className="header__container">
-                        {/* <div className="header__email">{email}</div> */}
-                        <Link to="/" className="header__link">Выйти</Link>
+                    <div className="header__link header__link-container">
+                        <p className="header__email">{userData.email}</p>
+                        <button onClick={props.signOut} className="header__link-button">Выйти</button>
                     </div>
                     
                 </div>
