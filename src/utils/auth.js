@@ -44,5 +44,4 @@ export const getContent = (token) => {
         }
     })
     .then(res => res.json())
-    // .then(data => data)
 }

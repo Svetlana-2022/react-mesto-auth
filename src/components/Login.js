@@ -19,33 +19,7 @@ const Login = ({ onLogin }) => {
         const {password, email} = state;
         if(!password || !email) return;
 
-        onLogin(password, email)
-            
-                // setState({
-                //     ...state,
-                //     message: 'Что-то пошло не так'
-                // })
-           
-        
-        // auth.authorize(state.email, state.password)
-        // .then((data) =>{
-        //    if(!data) {
-        //         return setState({
-        //             message: 'Что-то пошло не так'
-        //         });
-        //     }
-        //     if(data.jwt){
-        //         setState({
-        //             email: '',
-        //             password: ''
-        //         }, () =>{
-        //             props.handleL0gin();
-        //             props.histori.push('/');
-        //             return;
-        //         })
-        //     }
-        // })
-        // 
+        onLogin(password, email);
     }
     
     return (

@@ -114,8 +114,6 @@ function App() {
         setImagePopupOpen(true);
     }
 
-    
-
     function handleLogin(email, password) {
         return auth.authorize(email, password)
         .then((data) =>{
@@ -123,9 +121,7 @@ function App() {
 
             localStorage.setItem('jwt', data.token);
             tokenCheck();
-            setInfoTooltipPopupOpen(true);
-            setIcon(IconUnion);
-            setText('Вы успешно зарегистрировались!');   
+             
         }).catch(err => {
             console.log(err);
             setInfoTooltipPopupOpen(true);
@@ -136,10 +132,16 @@ function App() {
     }
     function handleRegister(password, email) {
         return auth.register(password, email).then((res) =>{
+           if(res && res.data) {
             history.push('/sign-in');
             setInfoTooltipPopupOpen(true);
             setIcon(IconUnion);
             setText('Вы успешно зарегистрировались!');
+           } else {
+            setInfoTooltipPopupOpen(true);
+            setIcon(IconUnionTwo);
+            setText('Что-то пошло не так! Попробуйте ещё раз.');
+           }  
                
         }).catch(err => {
             console.log(err);
@@ -152,11 +154,12 @@ function App() {
         const jwt = localStorage.getItem('jwt');
         if (!jwt) return;
         
-        auth.getContent(jwt).then((data) =>{
+        auth.getContent(jwt).then(({data}) =>{
+            console.log(data);
             setLoggedIn(true);
             setUserData({
-                email: data.email,
-                password: data.password
+                email: data.email
+                
             })
             history.push('/');
         });
@@ -166,54 +169,53 @@ function App() {
         console.log('jwt');
         history.push('/sign-in');
     }
-    console.log(userData);
+    
     
      
   return (
     <CurrentUserContext.Provider value={currentUser}>
-        <UserDataContext.Provider value={userData}>
-            <Header signOut={handleSignOut} userData={userData}/>
+        <Header signOut={handleSignOut} userData={userData}/>
         
         
-            <Switch>
-                <ProtectedRoute
-                    exact
-                    path="/"
-                    loggedIn={loggedIn}
-                    userData={userData}
-                    component={Main}
-                    cards={cards}
-                    onCardLike={handleCardLike}
-                    onCardDelete={handleCardDelete}
-                    onEditAvatar={() => setEditAvatarPopupOpen(true)}
-                    onEditProfile={() => setEditProfilePopupOpen(true)}
-                    onAddPlace={() => setAddPlacePopupOpen(true)}
-                    onCardClick={handleCardClick}
-                />
-                <Route path="/sign-up">
-                    <Register onRegister={handleRegister}/>
-                </Route>
-                <Route path="/sign-in">
-                    <Login onLogin={handleLogin} />
-                </Route>
-                <Route exact path="/">
-                    {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
-                </Route>
-            </Switch>
- 
-            <Footer/>
-            <EditProfilePopup onUpdateUser={handleUpdateUser} isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} />
-            <AddPlacePopup onAddPlace={handleAddPlaceSubmit} isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} />
-        
-            <ImagePopup card={selectedCard}  onClose={
-                function handleCloseClick() {
-                    closeAllPopups();
-                }}
-                isOpen={isImagePopupOpen}
+        <Switch>
+            <ProtectedRoute
+                exact
+                path="/"
+                loggedIn={loggedIn}
+                userData={userData}
+                component={Main}
+                cards={cards}
+                onCardLike={handleCardLike}
+                onCardDelete={handleCardDelete}
+                onEditAvatar={() => setEditAvatarPopupOpen(true)}
+                onEditProfile={() => setEditProfilePopupOpen(true)}
+                onAddPlace={() => setAddPlacePopupOpen(true)}
+                onCardClick={handleCardClick}
             />
-            <EditAvatarPopup onUpdateAvatar={handleUpdateAvatar} isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} />
-            <InfoTooltip isOpen={isInfoTooltipPopupOpen} onClose={closeAllPopups} icon={icon} text={text}/>
-        </UserDataContext.Provider>
+            <Route path="/sign-up">
+                <Register onRegister={handleRegister}/>
+            </Route>
+            <Route path="/sign-in">
+                <Login onLogin={handleLogin} />
+            </Route>
+            <Route exact path="/">
+                {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
+            </Route>
+        </Switch>
+
+        <Footer/>
+        <EditProfilePopup onUpdateUser={handleUpdateUser} isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} />
+        <AddPlacePopup onAddPlace={handleAddPlaceSubmit} isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} />
+    
+        <ImagePopup card={selectedCard}  onClose={
+            function handleCloseClick() {
+                closeAllPopups();
+            }}
+            isOpen={isImagePopupOpen}
+        />
+        <EditAvatarPopup onUpdateAvatar={handleUpdateAvatar} isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} />
+        <InfoTooltip isOpen={isInfoTooltipPopupOpen} onClose={closeAllPopups} icon={icon} text={text}/>
+         
     </CurrentUserContext.Provider>
   );
 }
