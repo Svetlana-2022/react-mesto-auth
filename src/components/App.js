@@ -19,8 +19,6 @@ import IconUnionTwo from '../images/ikon-union(2).svg'
 import InfoTooltip from './InfoTooltip';
 
 
-
-
 function App() {
     const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
     const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
@@ -52,7 +50,6 @@ function App() {
                 setCurrentUser(resUser);
             }).catch(err => console.log(err));
         }
-       
     }, [loggedIn])
 
     function handleCardLike(card) {
@@ -61,7 +58,6 @@ function App() {
         function updateCard(param) {
             return cards.map((c) => c._id === card._id ? param : c);
         }
-        
         if (!isLiked) {
             api.likeCard(card._id).then((newCard) => {
                 setCards(updateCard(newCard));  
@@ -71,8 +67,6 @@ function App() {
                 setCards(updateCard(newCard));
             }).catch(err => console.log(err));
         }
-        
-    
     }
     function handleCardDelete(card) {
         console.log(card._id);
@@ -81,8 +75,6 @@ function App() {
         }).catch(err => console.log(err));
     }
 
-    
-    
     function closeAllPopups() {
          setEditAvatarPopupOpen(false);
          setEditProfilePopupOpen(false);
@@ -128,7 +120,6 @@ function App() {
             setIcon(IconUnionTwo);
             setText('Что-то пошло не так! Попробуйте ещё раз.');
         });
-        
     }
     function handleRegister(password, email) {
         return auth.register(password, email).then((res) =>{
@@ -137,12 +128,7 @@ function App() {
             setInfoTooltipPopupOpen(true);
             setIcon(IconUnion);
             setText('Вы успешно зарегистрировались!');
-           } else {
-            setInfoTooltipPopupOpen(true);
-            setIcon(IconUnionTwo);
-            setText('Что-то пошло не так! Попробуйте ещё раз.');
-           }  
-               
+           }      
         }).catch(err => {
             console.log(err);
             setInfoTooltipPopupOpen(true);
@@ -158,25 +144,21 @@ function App() {
             console.log(data);
             setLoggedIn(true);
             setUserData({
-                email: data.email
-                
+                email: data.email 
             })
             history.push('/');
+        }).catch(err => {
+            console.log(err);
         });
     }
     function handleSignOut() {
         localStorage.removeItem('jwt');
-        console.log('jwt');
         history.push('/sign-in');
     }
     
-    
-     
   return (
     <CurrentUserContext.Provider value={currentUser}>
         <Header signOut={handleSignOut} userData={userData}/>
-        
-        
         <Switch>
             <ProtectedRoute
                 exact
@@ -202,11 +184,9 @@ function App() {
                 {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
             </Route>
         </Switch>
-
         <Footer/>
         <EditProfilePopup onUpdateUser={handleUpdateUser} isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} />
         <AddPlacePopup onAddPlace={handleAddPlaceSubmit} isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} />
-    
         <ImagePopup card={selectedCard}  onClose={
             function handleCloseClick() {
                 closeAllPopups();
@@ -215,7 +195,6 @@ function App() {
         />
         <EditAvatarPopup onUpdateAvatar={handleUpdateAvatar} isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} />
         <InfoTooltip isOpen={isInfoTooltipPopupOpen} onClose={closeAllPopups} icon={icon} text={text}/>
-         
     </CurrentUserContext.Provider>
   );
 }

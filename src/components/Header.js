@@ -15,7 +15,6 @@ function Header(props) {
                         <p className="header__email">{props.userData.email}</p>
                         <button onClick={props.signOut} className="header__link-button">Выйти</button>
                     </div>
-                    
                 </div>
             </Route>
             <Route path="/sign-in"> 
@@ -31,7 +30,6 @@ function Header(props) {
                 </div>
             </Route>
         </Switch>
-       
     );
 }
 
